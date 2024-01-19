@@ -9,9 +9,16 @@ const Question = ({
   earnedPoints,
   questionNo,
   numOfQuestions,
+  testFinished,
 }) => {
   const hasAnswered = answer !== null;
   const [time, setTime] = useState(420);
+
+  const handleNextQuestion = () => {
+    dispatch({ type: "next" });
+    testFinished ? dispatch({ type: "finished" }) : null;
+  };
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -65,7 +72,7 @@ const Question = ({
       </div>
       <div className="flex justify-between pt-4">
         <button>{formatTime(time)}</button>
-        <button onClick={() => dispatch({ type: "next" })}>Next</button>
+        {answer !== null && <button onClick={handleNextQuestion}>Next</button>}
       </div>
     </div>
   );

@@ -1,9 +1,11 @@
-import { useReducer, useEffect } from "react";
+import { useReducer } from "react";
 import "./App.css";
 import Question from "./components/Question";
 import Splash from "./components/SplashScreen/Splash";
 import Errors from "./components/Error/Errors";
 import Loading from "./components/Loading/Loading";
+import useFetch from "./hooks/useFetch";
+import Result from "./components/Result/Result";
 
 const initialState = {
   questions: [],
@@ -36,9 +38,9 @@ const reducer = (state, action) => {
     case "startTimer":
       return { ...state, timerStarted: true };
     case "next":
-      return { ...state, index: state.index + 1 };
-    case "prevous":
-      return { ...state, index: state.index - 1 };
+      return { ...state, index: state.index + 1, answer: null };
+    case "finished":
+      return { ...state, status: "finished" };
     default:
       return new Error("Invalid");
   }
@@ -54,21 +56,9 @@ function App() {
   );
 
   const numOfQuestions = questions.length;
+  const testFinished = index === numOfQuestions - 1;
 
-  useEffect(() => {
-    async function getQuestions() {
-      try {
-        const data = await fetch("http://localhost:9000/questions");
-        const res = await data.json();
-        if (res) {
-          dispatch({ type: "dataRecieved", payload: res });
-        }
-      } catch (error) {
-        dispatch({ type: "dataFailed" });
-      }
-    }
-    getQuestions();
-  }, []);
+  useFetch(dispatch);
 
   return (
     <>
@@ -92,8 +82,10 @@ function App() {
             earnedPoints={points}
             questionNo={index}
             numOfQuestions={numOfQuestions}
+            testFinished={testFinished}
           />
         )}
+        {status === "finished" && <Result earnedPoints={points} />}
       </main>
     </>
   );
