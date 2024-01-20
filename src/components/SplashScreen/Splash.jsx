@@ -1,3 +1,6 @@
+/* eslint-disable react/prop-types */
+import Button from "../Button/Button";
+
 const Splash = ({ dispatch, numOfQuestions }) => {
   const handleStartQuiz = () => {
     dispatch({ type: "startTimer" });
@@ -11,9 +14,9 @@ const Splash = ({ dispatch, numOfQuestions }) => {
         <p className="pt-3">
           {numOfQuestions} Questions to test your React mastery!
         </p>
-        <button className="mt-4" onClick={handleStartQuiz}>
+        <Button className="mt-4" onClick={handleStartQuiz}>
           Start Quiz
-        </button>
+        </Button>
       </div>
     </div>
   );

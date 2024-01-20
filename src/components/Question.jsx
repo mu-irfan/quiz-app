@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react/prop-types */
+import Options from "./Options/Options";
+import Button from "./Button/Button";
+import Progress from "./Progress/Progress";
+import Footer from "./Footer/Footer";
+import Timer from "./Timer/Timer";
 
 const Question = ({
   question,
@@ -12,38 +17,10 @@ const Question = ({
   testFinished,
 }) => {
   const hasAnswered = answer !== null;
-  const [time, setTime] = useState(420);
-
-  const handleNextQuestion = () => {
-    dispatch({ type: "next" });
-    testFinished ? dispatch({ type: "finished" }) : null;
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
-    ).padStart(2, "0")}`;
-  };
-
-  useEffect(() => {
-    let interval;
-    if (timerStarted) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime - 1);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [timerStarted]);
 
   return (
     <div className="mt-6 space-y-3">
+      <Progress numOfQuestions={numOfQuestions} questionNo={questionNo} />
       <div className="flex justify-between">
         <h1 className="text-xl text-left">
           Question {++questionNo} of {numOfQuestions}
@@ -54,26 +31,25 @@ const Question = ({
       </div>
       <hr />
       <h3>{question.question}</h3>
-      <div className="flex flex-col gap-3 pt-4">
-        {question.options.map((option, ind) => (
-          <button
-            key={option}
-            onClick={() => dispatch({ type: "newAnswer", payload: ind })}
-            disabled={hasAnswered}
-            className={
-              hasAnswered && ind === question.correctOption
-                ? "bg-blue-600"
-                : "bg-red-600"
+      <Options
+        question={question}
+        dispatch={dispatch}
+        hasAnswered={hasAnswered}
+      />
+      <Footer>
+        <Timer dispatch={dispatch} timerStarted={timerStarted} />
+        {answer !== null && (
+          <Button
+            onClick={() =>
+              testFinished
+                ? dispatch({ type: "finished" })
+                : dispatch({ type: "next" })
             }
           >
-            {option}
-          </button>
-        ))}
-      </div>
-      <div className="flex justify-between pt-4">
-        <button>{formatTime(time)}</button>
-        {answer !== null && <button onClick={handleNextQuestion}>Next</button>}
-      </div>
+            {testFinished ? "Finish" : "Next"}
+          </Button>
+        )}
+      </Footer>
     </div>
   );
 };

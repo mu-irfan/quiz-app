@@ -41,6 +41,8 @@ const reducer = (state, action) => {
       return { ...state, index: state.index + 1, answer: null };
     case "finished":
       return { ...state, status: "finished" };
+    case "restart":
+      return { ...initialState, questions: state.questions, status: "ready" };
     default:
       return new Error("Invalid");
   }
@@ -85,7 +87,9 @@ function App() {
             testFinished={testFinished}
           />
         )}
-        {status === "finished" && <Result earnedPoints={points} />}
+        {status === "finished" && (
+          <Result earnedPoints={points} dispatch={dispatch} />
+        )}
       </main>
     </>
   );
